@@ -6160,6 +6160,14 @@ var $rluiten$elm_text_search$Index$addDocs = F2(
 		return A4($rluiten$elm_text_search$Index$addDocsCore, 0, docs, index, _List_Nil);
 	});
 var $rluiten$elm_text_search$ElmTextSearch$addDocs = $rluiten$elm_text_search$Index$addDocs;
+var $elm$core$List$concat = function (lists) {
+	return A3($elm$core$List$foldr, $elm$core$List$append, _List_Nil, lists);
+};
+var $elm$core$List$concatMap = F2(
+	function (f, list) {
+		return $elm$core$List$concat(
+			A2($elm$core$List$map, f, list));
+	});
 var $rluiten$elm_text_search$Index$Defaults$elmTextSearchIndexType = '-= ElmTextSearch Index Type 1 =-';
 var $rluiten$elm_text_search$Index$Defaults$getIndexSimpleConfig = function (_v0) {
 	var ref = _v0.ref;
@@ -6790,7 +6798,12 @@ var $elm$core$Platform$Cmd$none = $elm$core$Platform$Cmd$batch(_List_Nil);
 var $author$project$Main$init = function (flags) {
 	var index = A2(
 		$rluiten$elm_text_search$ElmTextSearch$addDocs,
-		flags.items,
+		A2(
+			$elm$core$List$concatMap,
+			function ($) {
+				return $.items;
+			},
+			flags.catalog),
 		$rluiten$elm_text_search$ElmTextSearch$new(
 			{
 				fields: _List_fromArray(
@@ -6808,17 +6821,22 @@ var $author$project$Main$init = function (flags) {
 			})).a;
 	return _Utils_Tuple2(
 		{
+			catalog: flags.catalog,
 			config: flags.config,
 			focusedItem: $elm$core$Maybe$Nothing,
 			itemIndex: index,
-			items: flags.items,
 			searchContent: '',
 			searchMatches: A2(
 				$elm$core$List$map,
 				function ($) {
 					return $.name;
 				},
-				flags.items)
+				A2(
+					$elm$core$List$concatMap,
+					function ($) {
+						return $.items;
+					},
+					flags.catalog))
 		},
 		$elm$core$Platform$Cmd$none);
 };
@@ -7361,7 +7379,12 @@ var $author$project$Main$updateSearch = F2(
 						function ($) {
 							return $.name;
 						},
-						model.items)
+						A2(
+							$elm$core$List$concatMap,
+							function ($) {
+								return $.items;
+							},
+							model.catalog))
 				});
 		} else {
 			var _v1 = _v0.a;
@@ -7404,77 +7427,7 @@ var $elm$html$Html$Attributes$stringProperty = F2(
 	});
 var $elm$html$Html$Attributes$class = $elm$html$Html$Attributes$stringProperty('className');
 var $elm$html$Html$div = _VirtualDom_node('div');
-var $elm$html$Html$h1 = _VirtualDom_node('h1');
-var $elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
-var $elm$html$Html$text = $elm$virtual_dom$VirtualDom$text;
 var $elm$html$Html$h3 = _VirtualDom_node('h3');
-var $elm$html$Html$p = _VirtualDom_node('p');
-var $author$project$Main$viewFocusedItem = function (focus) {
-	if (focus.$ === 'Nothing') {
-		return A2(
-			$elm$html$Html$div,
-			_List_fromArray(
-				[
-					$elm$html$Html$Attributes$class('w-1/4'),
-					$elm$html$Html$Attributes$class('p-4')
-				]),
-			_List_Nil);
-	} else {
-		var item = focus.a;
-		return A2(
-			$elm$html$Html$div,
-			_List_fromArray(
-				[
-					$elm$html$Html$Attributes$class('w-1/4'),
-					$elm$html$Html$Attributes$class('p-4')
-				]),
-			_List_fromArray(
-				[
-					A2(
-					$elm$html$Html$h3,
-					_List_Nil,
-					_List_fromArray(
-						[
-							$elm$html$Html$text(item.name)
-						])),
-					A2(
-					$elm$html$Html$p,
-					_List_Nil,
-					_List_fromArray(
-						[
-							$elm$html$Html$text(item.description)
-						]))
-				]));
-	}
-};
-var $author$project$Item$raritytoInt = function (item) {
-	var _v0 = item.rarity;
-	switch (_v0) {
-		case 'Common':
-			return 0;
-		case 'Rare':
-			return 1;
-		case 'Legendary':
-			return 2;
-		case 'Boss':
-			return 3;
-		case 'Lunar':
-			return 4;
-		case 'Void':
-			return 5;
-		case 'Equipment':
-			return 6;
-		default:
-			return 7;
-	}
-};
-var $author$project$Item$defaultItemOrder = F2(
-	function (a, b) {
-		return A2(
-			$elm$core$Basics$compare,
-			$author$project$Item$raritytoInt(a),
-			$author$project$Item$raritytoInt(b));
-	});
 var $elm$core$List$member = F2(
 	function (x, xs) {
 		return A2(
@@ -7484,18 +7437,19 @@ var $elm$core$List$member = F2(
 			},
 			xs);
 	});
-var $elm$core$List$sortWith = _List_sortWith;
+var $elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
+var $elm$html$Html$text = $elm$virtual_dom$VirtualDom$text;
 var $elm$html$Html$ul = _VirtualDom_node('ul');
 var $author$project$Main$ItemMouseOver = function (a) {
 	return {$: 'ItemMouseOver', a: a};
 };
-var $author$project$Config$backgroundImagePath = F2(
+var $author$project$Main$backgroundImagePath = F2(
 	function (conf, item) {
-		return conf.itemBackgroundImagesDirectory + ('/' + item.background);
+		return conf.imagesDirectory + ('/' + item.background);
 	});
-var $author$project$Config$imagePath = F2(
+var $author$project$Main$imagePath = F2(
 	function (conf, item) {
-		return conf.itemImagesDirectory + ('/' + item.image);
+		return conf.imagesDirectory + ('/' + item.image);
 	});
 var $elm$html$Html$img = _VirtualDom_node('img');
 var $elm$html$Html$li = _VirtualDom_node('li');
@@ -7527,7 +7481,7 @@ var $elm$html$Html$Attributes$style = $elm$virtual_dom$VirtualDom$style;
 var $author$project$Main$viewItem = F3(
 	function (conf, item, itemMatch) {
 		var itemMatchClass = itemMatch ? $elm$html$Html$Attributes$class('') : $elm$html$Html$Attributes$class('opacity-30');
-		var bgStyle = 'url(\'' + (A2($author$project$Config$backgroundImagePath, conf, item) + '\')');
+		var bgStyle = 'url(\'' + (A2($author$project$Main$backgroundImagePath, conf, item) + '\')');
 		return A2(
 			$elm$html$Html$li,
 			_List_fromArray(
@@ -7550,25 +7504,27 @@ var $author$project$Main$viewItem = F3(
 					_List_fromArray(
 						[
 							$elm$html$Html$Attributes$src(
-							A2($author$project$Config$imagePath, conf, item)),
+							A2($author$project$Main$imagePath, conf, item)),
 							$elm$html$Html$Attributes$class('max-w-12'),
 							$elm$html$Html$Attributes$class('max-h-12')
 						]),
 					_List_Nil)
 				]));
 	});
-var $author$project$Main$viewItemList = F3(
-	function (conf, items, matches) {
-		var orderedItems = A2($elm$core$List$sortWith, $author$project$Item$defaultItemOrder, items);
+var $author$project$Main$viewCategory = F3(
+	function (conf, matches, category) {
 		return A2(
 			$elm$html$Html$div,
+			_List_Nil,
 			_List_fromArray(
 				[
-					$elm$html$Html$Attributes$class('w-3/4'),
-					$elm$html$Html$Attributes$class('p-4')
-				]),
-			_List_fromArray(
-				[
+					A2(
+					$elm$html$Html$h3,
+					_List_Nil,
+					_List_fromArray(
+						[
+							$elm$html$Html$text(category.name)
+						])),
 					A2(
 					$elm$html$Html$ul,
 					_List_fromArray(
@@ -7585,9 +7541,66 @@ var $author$project$Main$viewItemList = F3(
 								x,
 								A2($elm$core$List$member, x.name, matches));
 						},
-						orderedItems))
+						category.items))
 				]));
 	});
+var $author$project$Main$viewCatalog = F3(
+	function (conf, catalog, matches) {
+		return A2(
+			$elm$html$Html$div,
+			_List_fromArray(
+				[
+					$elm$html$Html$Attributes$class('w-3/4'),
+					$elm$html$Html$Attributes$class('p-4')
+				]),
+			A2(
+				$elm$core$List$map,
+				A2($author$project$Main$viewCategory, conf, matches),
+				catalog));
+	});
+var $elm$html$Html$pre = _VirtualDom_node('pre');
+var $author$project$Main$viewFocusedItem = function (focus) {
+	if (focus.$ === 'Nothing') {
+		return A2(
+			$elm$html$Html$div,
+			_List_fromArray(
+				[
+					$elm$html$Html$Attributes$class('w-1/4'),
+					$elm$html$Html$Attributes$class('p-4')
+				]),
+			_List_Nil);
+	} else {
+		var item = focus.a;
+		return A2(
+			$elm$html$Html$div,
+			_List_fromArray(
+				[
+					$elm$html$Html$Attributes$class('w-1/4'),
+					$elm$html$Html$Attributes$class('p-4')
+				]),
+			_List_fromArray(
+				[
+					A2(
+					$elm$html$Html$h3,
+					_List_Nil,
+					_List_fromArray(
+						[
+							$elm$html$Html$text(item.name)
+						])),
+					A2(
+					$elm$html$Html$pre,
+					_List_fromArray(
+						[
+							A2($elm$html$Html$Attributes$style, 'white-space', 'pre-wrap')
+						]),
+					_List_fromArray(
+						[
+							$elm$html$Html$text(item.description)
+						]))
+				]));
+	}
+};
+var $elm$html$Html$h1 = _VirtualDom_node('h1');
 var $author$project$Main$SearchStringUpdate = function (a) {
 	return {$: 'SearchStringUpdate', a: a};
 };
@@ -7646,6 +7659,27 @@ var $author$project$Main$viewSearchBar = function (content) {
 				_List_Nil)
 			]));
 };
+var $author$project$Main$viewHeader = function (search) {
+	return A2(
+		$elm$html$Html$div,
+		_List_Nil,
+		_List_fromArray(
+			[
+				A2(
+				$elm$html$Html$h1,
+				_List_fromArray(
+					[
+						$elm$html$Html$Attributes$class('text-xl'),
+						$elm$html$Html$Attributes$class('px-4'),
+						$elm$html$Html$Attributes$class('pt-4')
+					]),
+				_List_fromArray(
+					[
+						$elm$html$Html$text('Risk of Rain 2 Items')
+					])),
+				$author$project$Main$viewSearchBar(search)
+			]));
+};
 var $author$project$Main$view = function (data) {
 	return A2(
 		$elm$html$Html$div,
@@ -7655,25 +7689,7 @@ var $author$project$Main$view = function (data) {
 			]),
 		_List_fromArray(
 			[
-				A2(
-				$elm$html$Html$div,
-				_List_Nil,
-				_List_fromArray(
-					[
-						A2(
-						$elm$html$Html$h1,
-						_List_fromArray(
-							[
-								$elm$html$Html$Attributes$class('text-xl'),
-								$elm$html$Html$Attributes$class('px-4'),
-								$elm$html$Html$Attributes$class('pt-4')
-							]),
-						_List_fromArray(
-							[
-								$elm$html$Html$text('Risk of Rain 2 Items')
-							])),
-						$author$project$Main$viewSearchBar(data.searchContent)
-					])),
+				$author$project$Main$viewHeader(data.searchContent),
 				A2(
 				$elm$html$Html$div,
 				_List_fromArray(
@@ -7682,7 +7698,7 @@ var $author$project$Main$view = function (data) {
 					]),
 				_List_fromArray(
 					[
-						A3($author$project$Main$viewItemList, data.config, data.items, data.searchMatches),
+						A3($author$project$Main$viewCatalog, data.config, data.catalog, data.searchMatches),
 						$author$project$Main$viewFocusedItem(data.focusedItem)
 					]))
 			]));
@@ -7692,57 +7708,62 @@ var $author$project$Main$main = $elm$browser$Browser$element(
 _Platform_export({'Main':{'init':$author$project$Main$main(
 	A2(
 		$elm$json$Json$Decode$andThen,
-		function (items) {
+		function (config) {
 			return A2(
 				$elm$json$Json$Decode$andThen,
-				function (config) {
+				function (catalog) {
 					return $elm$json$Json$Decode$succeed(
-						{config: config, items: items});
+						{catalog: catalog, config: config});
 				},
 				A2(
 					$elm$json$Json$Decode$field,
-					'config',
-					A2(
-						$elm$json$Json$Decode$andThen,
-						function (itemImagesDirectory) {
-							return A2(
-								$elm$json$Json$Decode$andThen,
-								function (itemBackgroundImagesDirectory) {
-									return $elm$json$Json$Decode$succeed(
-										{itemBackgroundImagesDirectory: itemBackgroundImagesDirectory, itemImagesDirectory: itemImagesDirectory});
-								},
-								A2($elm$json$Json$Decode$field, 'itemBackgroundImagesDirectory', $elm$json$Json$Decode$string));
-						},
-						A2($elm$json$Json$Decode$field, 'itemImagesDirectory', $elm$json$Json$Decode$string))));
-		},
-		A2(
-			$elm$json$Json$Decode$field,
-			'items',
-			$elm$json$Json$Decode$list(
-				A2(
-					$elm$json$Json$Decode$andThen,
-					function (rarity) {
-						return A2(
+					'catalog',
+					$elm$json$Json$Decode$list(
+						A2(
 							$elm$json$Json$Decode$andThen,
 							function (name) {
 								return A2(
 									$elm$json$Json$Decode$andThen,
-									function (image) {
-										return A2(
-											$elm$json$Json$Decode$andThen,
-											function (description) {
-												return A2(
-													$elm$json$Json$Decode$andThen,
-													function (background) {
-														return $elm$json$Json$Decode$succeed(
-															{background: background, description: description, image: image, name: name, rarity: rarity});
-													},
-													A2($elm$json$Json$Decode$field, 'background', $elm$json$Json$Decode$string));
-											},
-											A2($elm$json$Json$Decode$field, 'description', $elm$json$Json$Decode$string));
+									function (items) {
+										return $elm$json$Json$Decode$succeed(
+											{items: items, name: name});
 									},
-									A2($elm$json$Json$Decode$field, 'image', $elm$json$Json$Decode$string));
+									A2(
+										$elm$json$Json$Decode$field,
+										'items',
+										$elm$json$Json$Decode$list(
+											A2(
+												$elm$json$Json$Decode$andThen,
+												function (name) {
+													return A2(
+														$elm$json$Json$Decode$andThen,
+														function (image) {
+															return A2(
+																$elm$json$Json$Decode$andThen,
+																function (description) {
+																	return A2(
+																		$elm$json$Json$Decode$andThen,
+																		function (background) {
+																			return $elm$json$Json$Decode$succeed(
+																				{background: background, description: description, image: image, name: name});
+																		},
+																		A2($elm$json$Json$Decode$field, 'background', $elm$json$Json$Decode$string));
+																},
+																A2($elm$json$Json$Decode$field, 'description', $elm$json$Json$Decode$string));
+														},
+														A2($elm$json$Json$Decode$field, 'image', $elm$json$Json$Decode$string));
+												},
+												A2($elm$json$Json$Decode$field, 'name', $elm$json$Json$Decode$string)))));
 							},
-							A2($elm$json$Json$Decode$field, 'name', $elm$json$Json$Decode$string));
-					},
-					A2($elm$json$Json$Decode$field, 'rarity', $elm$json$Json$Decode$string))))))(0)}});}(this));
+							A2($elm$json$Json$Decode$field, 'name', $elm$json$Json$Decode$string)))));
+		},
+		A2(
+			$elm$json$Json$Decode$field,
+			'config',
+			A2(
+				$elm$json$Json$Decode$andThen,
+				function (imagesDirectory) {
+					return $elm$json$Json$Decode$succeed(
+						{imagesDirectory: imagesDirectory});
+				},
+				A2($elm$json$Json$Decode$field, 'imagesDirectory', $elm$json$Json$Decode$string)))))(0)}});}(this));
